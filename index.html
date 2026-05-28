@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuestro Primer Año ❤️</title>
+  <style>
+    /* 1. CONFIGURACIÓN GENERAL Y FONDO ANIMADO */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #ffb3c1);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      position: relative;
+      color: #7209b7;
+      padding: 20px;
+    }
+
+    /* Contenedor para las burbujas */
+    #bubble-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -50px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
+      animation: floatUp 6s linear infinite;
+      cursor: pointer;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* BOTÓN FLOTANTE DE MÚSICA */
+    .music-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(5px);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(183, 9, 76, 0.15);
+      user-select: none;
+      transition: transform 0.2s;
+    }
+
+    .music-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* 2. CAPA DEL CONTENIDO PRINCIPAL */
+    .main-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin: auto;
+    }
+
+    /* 3. CABECERA Y RELOJ */
+    header h1 {
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      color: #b7094c;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+      margin-bottom: 10px;
+    }
+
+    .countdown-box {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(5px);
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(183, 9, 76, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .countdown-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #a01a58;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    #timer {
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
+      font-weight: bold;
+      color: #b7094c;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 4. ESTILOS DE LAS TARJETAS */
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 25px 20px;
+      border-radius: 25px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* 5. SECCIÓN TAMAGOTCHI */
+    .tamagotchi-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #a01a58;
+    }
+
+    .pixel-pet {
+      font-size: 4rem;
+      transition: transform 0.2s ease;
+      user-select: none;
+    }
+
+    .pixel-pet.bounce {
+      animation: petBounce 0.3s ease;
+    }
+
+    @keyframes petBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.35); }
+    }
+
+    .progress-container {
+      width: 100%;
+      background: #eee;
+      height: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff7096, #ff477e);
+      transition: width 0.3s ease;
+    }
+
+    /* Estilo para las frases pícaras dinámicas */
+    .feedback-text {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #b7094c;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      padding: 0 10px;
+    }
+
+    .tamagotchi-btns {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .t-btn {
+      background: #fff;
+      border: 2px solid #ff7096;
+      color: #ff477e;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .t-btn:hover {
+      background: #ff7096;
+      color: white;
+    }
+
+    .secret-box {
+      margin-top: 5px;
+      background: #fff0f5;
+      padding: 12px;
+      border-radius: 15px;
+      border: 2px dashed #ff477e;
+      display: none;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* 6. EL FRASCO DE LAS RAZONES */
+    .heart-jar {
+      font-size: 4.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      user-select: none;
+    }
+
+    .heart-jar.beat {
+      animation: heartBeat 0.4s linear;
+    }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.25); }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .jar-btn {
+      background: linear-gradient(135deg, #ff4d6d, #c9184a);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(201, 24, 74, 0.3);
+    }
+
+    .reason-box {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reason-text {
+      font-size: 1.05rem;
+      color: #4a0072;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="bgMusic" src="Taylor Swift - Lover (Official Music Video).mp3" loop></audio>
+
+  <div id="musicBtn" class="music-btn" onclick="toggleMusica()">🎵</div>
+
+  <div id="bubble-container"></div>
+
+  <div class="main-content">
+    
+    <header>
+      <h1>Feliz Aniversario ✨</h1>
+      <div class="countdown-box">
+        <div class="countdown-title">Tiempo amándote:</div>
+        <div id="timer">Calculando momentos...</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="tamagotchi-title">El amor hay que alimentarlo 🌱</div>
+      <div id="petCharacter" class="pixel-pet">💖</div>
+      
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="tamagotchiFeedback" class="feedback-text">
+        Tengo hambre de amor... ¿Me consientes un poquito? 😉
+      </div>
+
+      <div class="tamagotchi-btns">
+        <button class="t-btn" onclick="alimentarAmor('abrazo')">🫂 Dar abrazos virtuales</button>
+        <button class="t-btn" onclick="alimentarAmor('teamo')">🗣️ Decir te amo</button>
+        <button class="t-btn" onclick="alimentarAmor('beso')">💋 Enviar un beso</button>
+      </div>
+
+      <div id="secretBox" class="secret-box">
+        <p style="color: #b7094c; font-weight: bold; font-size: 0.95rem;">
+          🔓 ¡Nivel de amor al máximo! Eres lo mejor que me pasó en la vida, mi bebé hermosa. ¡Ya conté las horas para estar juntos en Panamá! ✨
+        </p>
+      </div>
+    </section>
+
+    <main id="jarCard" class="card" style="display: none;">
+      <div id="heartJar" class="heart-jar" onclick="sacarRazon()">🫙</div>
+      <button class="jar-btn" onclick="sacarRazon()">✨ Sacar una razón</button>
+      
+      <div class="reason-box">
+        <p id="reasonDisplay" class="reason-text">Haz clic en el frasco para descubrir una de las tantas razones de por qué te amo...</p>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. CONFIGURACIÓN DE FECHA EXACTA
+    // ==========================================
+    const fechaInicio = new Date(2025, 4, 18, 14, 28, 0); // 18 de Mayo de 2025 - 2:28 PM
+
+    // ==========================================
+    // 2. TU LISTA COMPLETA DE RAZONES
+    // ==========================================
+    const razones = [
+      "Por la forma en que tus ojos brillan cuando hablas de algo que te apasiona.",
+      "Porque tienes la sonrisa más hermosa de todo el planeta.",
+      "Por que me encanta escuchar tu risa, me hace muy feliz.",
+      "Por la ternura con la que tratas a los gatos. 🐱🐈",
+      "Porque eres la combinación perfecta entre un alma divertida y madura.",
+      "Por el orgullo que siento cada vez que le hablo a alguien de ti.",
+      "Por cómo te ves cuando estás distraída o concentrada en lo tuyo.",
+      "Amo nuestros chistes internos que nadie más entiende y nos dan risa.",
+      "Amo nuestras complicidad cuando nos hablamos sin usar palabras.",
+      "Cada segundo hablando contigo hace que la distancia valga la pena.",
+      "Por tu inteligencia y la facilidad que tienes para entender mi mente.",
+      "Por tu sentido del humor, que encaja perfectamente con el mío.",
+      "Simplemente por ser tú.",
+      "Porque ver tu carita en la pantalla es la mejor parte de mi día.",
+      "Por todos los planes que hacemos juntos.",
+      "Por los 'buenos días' y 'buenas noches' que nunca faltan en nuestro chat.",
+      "Por cómo logras hacerme sentir amado e importante desde otro país.",
+      "Porque sé que no importa la hora, siempre estás ahí para mí.",
+      "Por los suspiros que me sacas cuando me quedo viendo tus fotos.",
+      "Por cada 'Te amo' que me haces sentir.",
+      "Por los memes y videos de TikTok que nos mandamos para sentirnos cerca.",
+      "Porque eres mi primer pensamiento al despertar y el último al dormir.",
+      "Porque no hay kilómetros que puedan ganarle a las ganas que tengo de ti.",
+      "Porque vale totalmente la pena esperar el tiempo que sea por ti.",
+      "Porque contigo puedo ser yo mismo sin miedo a ser juzgado.",
+      "Porque me haces querer ser la mejor versión de mí mismo todos los días.",
+      "Por la paz tan inmensa que siento cuando hablo contigo.",
+      "Porque crees en mí incluso cuando yo mismo dudo de mis capacidades.",
+      "Por cómo celebras mis logros como si fueran tuyos.",
+      "Porque me enseñaste un tipo de amor sano, libre y lleno de confianza.",
+      "Por cómo me escuchas cuando necesito desahogarme con mis cosas.",
+      "Porque eres mi mejor amiga, mi novia y mi confidente favorita.",
+      "Por la complicidad que tenemos.",
+      "Porque a tu lado los problemas parecen mucho más pequeños de lo que son.",
+      "Porque sanaste partes de mí que tú no rompiste.",
+      "Por la seguridad que me da saber que juegas en mi mismo equipo.",
+      "Porque cambiaste mi vida por completo desde aquel 18 de mayo.",
+      "Por nuestra primera conversación, que cambió mi vida para siempre.",
+      "Por esa primera llamada de madrugada donde los nervios casi nos ganan.",
+      "Por cada película y serie que hemos visto.",
+      "Por las fotitos que me mandas de tu carita.",
+      "Por las fotitos de tu día a día (me encanta que me hagas sentir presente).",
+      "Por los llamadas cada noche donde me cuentas todo lo que hiciste en el día.",
+      "Por las discusiones tontas sobre quién ama más a quién (¡obviamente siempre gano!).",
+      "Porque sé que este es solo el primer año de muchísimos más.",
+      "Por el futuro hermoso que estamos diseñando paso a paso.",
+      "Por los viajes que vamos a hacer y los lugares que conoceremos juntos.",
+      "Por los desayunos que te voy a preparar cuando vivamos juntos.",
+      "Porque sé que todo este esfuerzo de hoy se convertirá en nuestro hogar del mañana.",
+      "Por el día en que la distancia por fin sea de cero kilómetros.",
+      "Por las noches de películas que tendremos en nuestro casita.",
+      "Por el día en que ya no tengamos que decirnos 'adiós' and colgar la llamada, sino simplemente 'hasta mañana' en la cama.",
+      "Por todas las citas reales, restaurantes y paseos que tenemos acumulados y pendientes en nuestra lista.",
+      "Por la certeza de saber que cada día que pasa es un día menos para estar juntos.",
+      "Porque falta poquísimo para que esas semanas se conviertan en horas y por fin esté contigo en Panamá.",
+      "Porque aunque tú seas la Swiftie número uno y yo escuche a José Madero, nuestras canciones encajan a la perfección.",
+      "Porque cada vez que suena Taylor Swift, sonrío como tonto a los dos segundos pensando en ti.",
+      "Porque nuestra relación tiene la mejor banda sonora del mundo gracias al contraste de tu música y la mía.",
+      "Porque estaba completamente 'Enchanted' de conocerte desde aquella noche en que empezamos a hablar.",
+      "Porque tienes la carita más linda, dulce y perfecta de todo el universo, y me hipnotizas cada vez que te veo.",
+      "Porque tu carita es mi refugio favorito en el mundo y lo único que necesito ver para olvidar cualquier mal día.",
+      "Because me encanta adentrarme en universos enteros solo porque tú me lo pides, como Dune, Harry Potter y Avatar.",
+      "Porque ahora entiendo las referencias de Brooklyn Nine-Nine y sé que somos tan perfectos como Jake y Amy.",
+      "Porque ver Fleabag por ti me hizo entender aún más tu sentido del humor y conectar con lo que te gusta.",
+      "Porque ver Invencible pasó de ser algo que hacía por curiosidad a una de nuestras cosas favoritas.",
+      "Por descubrir la magia de Avatar: La Leyenda de Aang a través de tus ojos y encariñarme con tus personajes favoritos.",
+      "Porque el hecho de que veas One Piece por mí es la prueba de amor más grande y hermosa del mundo; eres mi nakama favorita. 🏴‍☠️",
+      "Porque nuestro amor es un viaje largo, épico y lleno de aventuras justo como el Grand Line, pero contigo voy a donde sea.",
+      "Por todas las series que aún nos quedan por descubrir, las películas por criticar y los mundos por recorrer juntos.",
+      "Por esa emoción inigualable que siento en el pecho cada vez, cuando sé que vamos en camino a encontrarnos y faltan horas para abrazarte y darte muchos besitos.",
+      "Por los calendarios mentales que armamos para que los días pasen volando entre Trujillo y Panamá.",
+      "Por la forma en que extrañarte durante el mes me hace valorar mil veces más cada segundo que pasamos juntos físicamente.",
+      "Porque ver de cerca tu valentía enfrentando este viaje de 10 semanas me hace admirarte y amarte muchísimo más.",
+      "Por el espacio tan enorme que ocupas en mi vida, sin importar lo que dicte el mapa o el GPS.",
+      "Porque de todas las personas en Lima, Trujillo, en Panamá y en el mundo, tú eres y siempre serás mi coincidencia favorita.",
+      "Porque cada vez que te veo regresar a Lima, confirmo que mi lugar favorito en el planeta es justo a tu lado.",
+      "Por la intensidad tan bonita con la que nos amamos, que supera cualquier huso horario y frontera.",
+      "Porque me encanta quedarme congelado simplemente admirando tu carita por la cámara mientras me cuentas cómo estuvo tu día.",
+      "Porque tu carita hermosa es lo único que necesito ver para reiniciarme la vida y olvidar cualquier mal momento.",
+      "Porque este primer año es solo el cimiento fuerte de la vida entera que nos espera sin aeropuertos de por medio.",
+      "Porque me demostraste que el amor de verdad no sabe de distancias, sino de ganas, de compromiso y de equipo.",
+      "Porque te amo con una fuerza que simplemente no cabe en 100 razones, mi amor, mi compañera de maratones y mi todo. ❤️",
+      "Porque amo ver tu carita de felicidad absoluta cada vez que abres una bolsa de Inka Chips.",
+      "Because tú eres de pedir unas papas fritas bien crujientes y yo soy feliz viéndote comerlas con tanta emoción.",
+      "Porque eres una piña colada en un día caluroso en Panamá: dulce, refrescante y completamente adictiva.",
+      "Porque me encanta que salgas con tus amigos y te diviertas, pero amo aún más cuando me mandas un mensaje en plena fiesta diciendo que me amas o me extrañas.",
+      "Porque tu amor por la salchipapa es tan gigante como el mío por el ceviche, y aun así somos el match más perfecto del mundo.",
+      "Porque eres la sal de mis Inka Chips: le das el sabor exacto, divertido y perfecto a mi vida.",
+      "Porque eres mi trago favorito en el universo, dulce, alegre y perfecta como una piña colada de fin de semana.",
+      "Porque eres tan vital e indispensable para mí como toda el agua que tomo todo el día.",
+      "Porque me encanta cuando te pones tímida cuando estamos solos, pero amo mil veces más cuando te pones traviesa y me dejas con ganas de más.",
+      "Porque la pantalla del celular ya se está quedando muy chica para toda la tensión y las ganas que nos tenemos a la distancia.",
+      "Porque en unas semanas en Panamá la barra de energía no va a ser virtual, y la vamos a llenar a puros besos de verdad. 🔥",
+      "Because me fascina que seas mi bebé, mi chiquitita de día, pero mi tentación favorita cuando cae la noche.",
+      "Por los suspiros prohibidos que me sacas cuando me mandas fotitos donde te ves demasiado sexy.",
+      "Por las ganas locas que tengo de morderte esos labios perfectos cada vez que nos vemos.",
+      "Por todos los planes secretos que tenemos para cuando estemos completamente a solas en casita. 😉",
+      "Porque me fascina ser el único dueño de tus pensamientos más pícaros y de tus sonrisas más coquetas.",
+      "Because te tengo unas ganas que simplemente ya no caben en este código, y faltan muy pocas semanas para demostrártelo en vivo y en directo. ❤️",
+      "Porque me encanta cuando mi pantalla se ilumina con una foto tuya de la nada y de repente todo mi día se vuelve un 1000% mejor.",
+      "Porque amo cuando me mandas fotos de tus outfits y con eso confirmo lo increíblemente hermosa y sexy que te ves con todo.",
+      "Por cómo se me acelera el pulso cada vez que veo la notificación en WhatsApp de que me has enviado una foto 'solo para mí'. 😉",
+      "Porque si tus fotos ya me hacen perder el control a miles de kilómetros, tenerte al frente en vivo y en directo va a ser completamente criminal.",
+      "Porque detrás de cada foto que nos compartimos hay una promesa silenciosa de todo lo que vamos a desquitar cuando estemos a cero kilómetros. ❤️"
+    ];
+
+    // ==========================================
+    // 3. LOGICA DE AUDIO EN SEGUNDO PLANO
+    // ==========================================
+    const musica = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+
+    // Activar audio al primer toque en cualquier parte de la pantalla
+    document.addEventListener('click', () => {
+      if (musica.paused) {
+        musica.play().catch(err => console.log("Interacción requerida para audio"));
+        musicBtn.innerText = "🎵";
+      }
+    }, { once: true });
+
+    function toggleMusica() {
+      if (musica.paused) {
+        musica.play();
+        musicBtn.innerText = "🎵";
+      } else {
+        musica.pause();
+        musicBtn.innerText = "🔇";
+      }
+    }
+
+    // ==========================================
+    // 4. LÓGICA DEL RELOJ DE TIEMPO
+    // ==========================================
+    function actualizarContador() {
+      const ahora = new Date();
+      const diferencia = ahora - fechaInicio;
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+      document.getElementById('timer').innerHTML = `${dias} días, ${horas}h, ${minutos}m y ${segundos}s`;
+    }
+    setInterval(actualizarContador, 1000);
+    actualizarContador();
+
+    // ==========================================
+    // 5. LÓGICA DEL TAMAGOTCHI CON FRASES PÍCARAS
+    // ==========================================
+    let energiaAmor = 0;
+    const emojisMascota = { inicial: "💖", abrazo: "🫂", teamo: "🥰", beso: "💋", lleno: "👑" };
+
+    function alimentarAmor(tipo) {
+      if (energiaAmor >= 100) return;
+
+      const pet = document.getElementById('petCharacter');
+      const bar = document.getElementById('progressBar');
+      const feedback = document.getElementById('tamagotchiFeedback');
+      
+      energiaAmor += 5; 
+      if (energiaAmor > 100) energiaAmor = 100;
+
+      bar.style.width = `${energiaAmor}%`;
+      pet.innerText = emojisMascota[tipo];
+
+      if (energiaAmor <= 25) {
+        const bajas = [
+          "¿Tan poquitos besos? Te hacen falta mandarme muchísimos más... 💋",
+          "Ese abrazo estuvo tierno, pero sé que puedes hacerlo mejor. 🫂",
+          "Tengo hambre de tu amor a distancia. ¡Dame más! uwu",
+          "Mmm... sigo con antojo de ti. No pares. 😏"
+        ];
+        feedback.innerText = bajas[Math.floor(Math.random() * bajas.length)];
+      } 
+      else if (energiaAmor <= 65) {
+        const medias = [
+          "Ya va queriendo... pero el clima de Panamá exige más calor. 🔥",
+          "Esos 'Te amo' están potentes, pero sigo queriendo más mimos.",
+          "¡Eso! Así me gusta que me consientas, mi amor. 😉",
+          "Dale con ganas, que Luffy insistiría más para encontrar el One Piece. 🏴‍仇"
+        ];
+        feedback.innerText = medias[Math.floor(Math.random() * medias.length)];
+      } 
+      else if (energiaAmor <= 95) {
+        const altas = [
+          "¡Uff, ya me tienes loquito de amor! ¡Un poquito más! 🥰",
+          "¡Casi, casi! Sigue mandando besos que ya casi liberas la sorpresa...",
+          "Mi barra de amor está por estallar por tu culpa. 🔥",
+          "Un par de clics más y se rompe el candado del jarrón... 🔮"
+        ];
+        feedback.innerText = altas[Math.floor(Math.random() * altas.length)];
+      }
+
+      pet.classList.remove('bounce');
+      void pet.offsetWidth;
+      pet.classList.add('bounce');
+
+      if (energiaAmor < 100) {
+        setTimeout(() => {
+          if (energiaAmor < 100) pet.innerText = emojisMascota.inicial;
+        }, 600);
+      } else {
+        pet.innerText = emojisMascota.lleno;
+        feedback.innerText = "¡Amor completamente desbloqueado! 😍👑";
+        document.getElementById('secretBox').style.display = 'block';
+        
+        const jarCard = document.getElementById('jarCard');
+        jarCard.style.display = 'flex';
+        jarCard.style.animation = 'fadeIn 0.6s ease forwards';
+      }
+    }
+
+    // ==========================================
+    // 6. LÓGICA DEL FRASCO DE LAS RAZONES
+    // ==========================================
+    let ultimaRazon = -1;
+
+    function sacarRazon() {
+      const heart = document.getElementById('heartJar');
+      const display = document.getElementById('reasonDisplay');
+      
+      heart.classList.remove('beat');
+      void heart.offsetWidth;
+      heart.classList.add('beat');
+
+      let indiceAleatorio;
+      do {
+        indiceAleatorio = Math.floor(Math.random() * razones.length);
+      } while (indiceAleatorio === ultimaRazon && razones.length > 1);
+      
+      ultimaRazon = indiceAleatorio;
+
+      display.style.animation = 'none';
+      void display.offsetWidth;
+      display.innerText = razones[indiceAleatorio];
+      display.style.animation = 'fadeIn 0.5s ease forwards';
+    }
+
+    // ==========================================
+    // 7. LÓGICA DE LAS BURBUJAS INTERACTIVAS
+    // ==========================================
+    const container = document.getElementById('bubble-container');
+    const piropos = ["❤️", "🧡", "💛", "💚", "💙", "💜", "💖", "💝", "💕", "🥰", "🐣", "🐤", "🐥", "✨"];
+
+    function sonidoPop() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
+    }
+
+    function crearBurbuja() {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      const size = Math.random() * 25 + 25;
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${Math.random() * 100}vw`;
+      bubble.style.animationDuration = `${Math.random() * 3 + 5}s`;
+
+      bubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sonidoPop();
+        
+        const x = e.clientX;
+        const y = e.clientY;
+        bubble.remove();
+        
+        const popText = document.createElement('div');
+        popText.innerText = piropos[Math.floor(Math.random() * piropos.length)];
+        popText.style.position = 'fixed';
+        popText.style.left = `${x}px`;
+        popText.style.top = `${y}px`;
+        popText.style.transform = 'translate(-50%, -50%) scale(0.5)';
+        popText.style.fontSize = '2rem';
+        popText.style.zIndex = '4';
+        popText.style.pointerEvents = 'none';
+        popText.style.transition = 'all 0.4s ease-out';
+        
+        container.appendChild(popText);
+        
+        setTimeout(() => {
+          popText.style.transform = 'translate(-50%, -100%) scale(1.6)';
+          popText.style.opacity = '0';
+        }, 10);
+        
+        setTimeout(() => popText.remove(), 400);
+      });
+
+      container.appendChild(bubble);
+      setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, 8000);
+    }
+
+    setInterval(crearBurbuja, 600);
+  </script>
+</body>
+</html>
