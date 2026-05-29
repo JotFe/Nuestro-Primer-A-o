@@ -332,6 +332,13 @@
       padding: 5px 10px;
     }
 
+    .jar-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #a01a58;
+      margin-bottom: 5px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -390,6 +397,7 @@
     </section>
 
     <main id="jarCard" class="card" style="display: none;">
+      <div class="jar-title">100 razones por las cuales te amo (o tal vez más...)</div>
       <div id="heartJar" class="heart-jar" onclick="sacarRazon()">🫙</div>
       <button class="jar-btn" onclick="sacarRazon()">✨ Sacar una razón</button>
     </main>
