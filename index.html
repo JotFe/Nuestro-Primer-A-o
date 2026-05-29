@@ -180,7 +180,6 @@
       transition: width 0.3s ease;
     }
 
-    /* Estilo para las frases pícaras dinámicas */
     .feedback-text {
       font-size: 0.95rem;
       font-style: italic;
@@ -259,18 +258,78 @@
       box-shadow: 0 5px 15px rgba(201, 24, 74, 0.3);
     }
 
-    .reason-box {
-      min-height: 70px;
-      display: flex;
-      align-items: center;
+    /* NUEVO: ESTILOS PARA LA VENTANA MODAL FLOTANTE */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 10; /* Por encima de las burbujas */
       justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    .reason-text {
+    .modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 25px;
+      width: 90%;
+      max-width: 380px; /* Un ancho estándar estético para celulares */
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(183, 9, 76, 0.2);
+      border: 2px solid #ff7096;
+      position: relative;
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .modal-overlay.show .modal-card {
+      transform: scale(1);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 1.8rem;
+      color: #b7094c;
+      cursor: pointer;
+      font-weight: bold;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .modal-img {
+      width: 100%;
+      height: auto; /* ¡Aquí está el truco! Calcula la altura real de la foto automáticamente */
+      max-height: 380px; /* Un límite seguro para que las fotos muy verticales no se salgan de la pantalla */
+      object-fit: contain; /* Respeta la proporción original de la foto sin recortar ninguna esquina */
+      border-radius: 20px;
+      border: 2px solid #ffbecc;
+    }
+
+    .modal-reason-text {
       font-size: 1.05rem;
       color: #4a0072;
       line-height: 1.5;
       font-style: italic;
+      font-weight: 500;
+      padding: 5px 10px;
     }
 
     @keyframes fadeIn {
@@ -286,6 +345,14 @@
   <div id="musicBtn" class="music-btn" onclick="toggleMusica()">🎵</div>
 
   <div id="bubble-container"></div>
+
+  <div id="reasonModal" class="modal-overlay" onclick="cerrarModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <span class="close-modal" onclick="cerrarModal()">&times;</span>
+      <img id="modalImg" src="" class="modal-img" alt="Nuestro Recuerdo">
+      <p id="modalText" class="modal-reason-text"></p>
+    </div>
+  </div>
 
   <div class="main-content">
     
@@ -325,10 +392,6 @@
     <main id="jarCard" class="card" style="display: none;">
       <div id="heartJar" class="heart-jar" onclick="sacarRazon()">🫙</div>
       <button class="jar-btn" onclick="sacarRazon()">✨ Sacar una razón</button>
-      
-      <div class="reason-box">
-        <p id="reasonDisplay" class="reason-text">Haz clic en el frasco para descubrir una de las tantas razones de por qué te amo...</p>
-      </div>
     </main>
 
   </div>
@@ -338,6 +401,51 @@
     // 1. CONFIGURACIÓN DE FECHA EXACTA
     // ==========================================
     const fechaInicio = new Date(2025, 4, 18, 14, 28, 0); // 18 de Mayo de 2025 - 2:28 PM
+
+    // ==========================================
+    // NUEVO: LISTA DE FOTOS PARA LOS MODALES
+    // ==========================================
+    const fotosRecuerdos = [
+      "recuerdo (1).jpg",
+      "recuerdo (2).jpg",
+      "recuerdo (3).jpg",
+      "recuerdo (4).jpg",
+      "recuerdo (5).jpg",
+      "recuerdo (6).jpg",
+      "recuerdo (7).jpg",
+      "recuerdo (8).jpg",
+      "recuerdo (9).jpg",   
+      "recuerdo (10).jpg",
+      "recuerdo (11).jpg",
+      "recuerdo (12).jpg",
+      "recuerdo (13).jpg",
+      "recuerdo (14).jpg",
+      "recuerdo (15).jpg",
+      "recuerdo (16).jpg",
+      "recuerdo (17).jpg",
+      "recuerdo (18).jpg",
+      "recuerdo (19).jpg",   
+      "recuerdo (20).jpg",
+      "recuerdo (21).jpg",
+      "recuerdo (22).jpg",
+      "recuerdo (23).jpg",
+      "recuerdo (24).jpg",
+      "recuerdo (25).jpg",
+      "recuerdo (26).jpg",
+      "recuerdo (27).jpg",
+      "recuerdo (28).jpg",
+      "recuerdo (29).jpg",  
+      "recuerdo (30).jpg",
+      "recuerdo (31).jpg",
+      "recuerdo (32).jpg",
+      "recuerdo (33).jpg",
+      "recuerdo (34).jpg",
+      "recuerdo (35).jpg",
+      "recuerdo (36).jpg",
+      "recuerdo (37).jpg",
+      "recuerdo (38).jpg",
+      "recuerdo (39).jpg"
+    ];
 
     // ==========================================
     // 2. TU LISTA COMPLETA DE RAZONES
@@ -360,24 +468,24 @@
       "Por todos los planes que hacemos juntos.",
       "Por los 'buenos días' y 'buenas noches' que nunca faltan en nuestro chat.",
       "Por cómo logras hacerme sentir amado e importante desde otro país.",
-      "Porque sé que no importa la hora, siempre estás ahí para mí.",
+      "Because sé que no importa la hora, siempre estás ahí para mí.",
       "Por los suspiros que me sacas cuando me quedo viendo tus fotos.",
       "Por cada 'Te amo' que me haces sentir.",
       "Por los memes y videos de TikTok que nos mandamos para sentirnos cerca.",
-      "Porque eres mi primer pensamiento al despertar y el último al dormir.",
+      "Because eres mi primer pensamiento al despertar y el último al dormir.",
       "Porque no hay kilómetros que puedan ganarle a las ganas que tengo de ti.",
       "Porque vale totalmente la pena esperar el tiempo que sea por ti.",
       "Porque contigo puedo ser yo mismo sin miedo a ser juzgado.",
       "Porque me haces querer ser la mejor versión de mí mismo todos los días.",
       "Por la paz tan inmensa que siento cuando hablo contigo.",
       "Porque crees en mí incluso cuando yo mismo dudo de mis capacidades.",
-      "Por cómo celebras mis logros como si fueran tuyos.",
+      "Por cómo celebras mis logros como si fueran yours.",
       "Porque me enseñaste un tipo de amor sano, libre y lleno de confianza.",
       "Por cómo me escuchas cuando necesito desahogarme con mis cosas.",
       "Porque eres mi mejor amiga, mi novia y mi confidente favorita.",
       "Por la complicidad que tenemos.",
       "Porque a tu lado los problemas parecen mucho más pequeños de lo que son.",
-      "Porque sanaste partes de mí que tú no rompiste.",
+      "Because sanaste partes de mí que tú no rompiste.",
       "Por la seguridad que me da saber que juegas en mi mismo equipo.",
       "Porque cambiaste mi vida por completo desde aquel 18 de mayo.",
       "Por nuestra primera conversación, que cambió mi vida para siempre.",
@@ -387,11 +495,11 @@
       "Por las fotitos de tu día a día (me encanta que me hagas sentir presente).",
       "Por los llamadas cada noche donde me cuentas todo lo que hiciste en el día.",
       "Por las discusiones tontas sobre quién ama más a quién (¡obviamente siempre gano!).",
-      "Porque sé que este es solo el primer año de muchísimos más.",
+      "Because sé que este es solo el primer año de muchísimos más.",
       "Por el futuro hermoso que estamos diseñando paso a paso.",
       "Por los viajes que vamos a hacer y los lugares que conoceremos juntos.",
       "Por los desayunos que te voy a preparar cuando vivamos juntos.",
-      "Porque sé que todo este esfuerzo de hoy se convertirá en nuestro hogar del mañana.",
+      "Because sé que todo este esfuerzo de hoy se convertirá en nuestro hogar del mañana.",
       "Por el día en que la distancia por fin sea de cero kilómetros.",
       "Por las noches de películas que tendremos en nuestro casita.",
       "Por el día en que ya no tengamos que decirnos 'adiós' and colgar la llamada, sino simplemente 'hasta mañana' en la cama.",
@@ -399,40 +507,40 @@
       "Por la certeza de saber que cada día que pasa es un día menos para estar juntos.",
       "Porque falta poquísimo para que esas semanas se conviertan en horas y por fin esté contigo en Panamá.",
       "Porque aunque tú seas la Swiftie número uno y yo escuche a José Madero, nuestras canciones encajan a la perfección.",
-      "Porque cada vez que suena Taylor Swift, sonrío como tonto a los dos segundos pensando en ti.",
+      "Because cada vez que suena Taylor Swift, sonrío como tonto a los dos segundos pensando en ti.",
       "Porque nuestra relación tiene la mejor banda sonora del mundo gracias al contraste de tu música y la mía.",
       "Porque estaba completamente 'Enchanted' de conocerte desde aquella noche en que empezamos a hablar.",
-      "Porque tienes la carita más linda, dulce y perfecta de todo el universo, y me hipnotizas cada vez que te veo.",
+      "Because tienes la carita más linda, dulce y perfecta de todo el universo, y me hipnotizas cada vez que te veo.",
       "Porque tu carita es mi refugio favorito en el mundo y lo único que necesito ver para olvidar cualquier mal día.",
       "Because me encanta adentrarme en universos enteros solo porque tú me lo pides, como Dune, Harry Potter y Avatar.",
       "Porque ahora entiendo las referencias de Brooklyn Nine-Nine y sé que somos tan perfectos como Jake y Amy.",
       "Porque ver Fleabag por ti me hizo entender aún más tu sentido del humor y conectar con lo que te gusta.",
-      "Porque ver Invencible pasó de ser algo que hacía por curiosidad a una de nuestras cosas favoritas.",
+      "Because ver Invencible pasó de ser algo que hacía por curiosidad a una de nuestras cosas favoritas.",
       "Por descubrir la magia de Avatar: La Leyenda de Aang a través de tus ojos y encariñarme con tus personajes favoritos.",
-      "Porque el hecho de que veas One Piece por mí es la prueba de amor más grande y hermosa del mundo; eres mi nakama favorita. 🏴‍☠️",
+      "Because el hecho de que veas One Piece por mí es la prueba de amor más grande y hermosa del mundo; eres mi nakama favorita. 🏴‍☠️",
       "Porque nuestro amor es un viaje largo, épico y lleno de aventuras justo como el Grand Line, pero contigo voy a donde sea.",
       "Por todas las series que aún nos quedan por descubrir, las películas por criticar y los mundos por recorrer juntos.",
       "Por esa emoción inigualable que siento en el pecho cada vez, cuando sé que vamos en camino a encontrarnos y faltan horas para abrazarte y darte muchos besitos.",
       "Por los calendarios mentales que armamos para que los días pasen volando entre Trujillo y Panamá.",
       "Por la forma en que extrañarte durante el mes me hace valorar mil veces más cada segundo que pasamos juntos físicamente.",
-      "Porque ver de cerca tu valentía enfrentando este viaje de 10 semanas me hace admirarte y amarte muchísimo más.",
+      "Because ver de cerca tu valentía enfrentando este viaje de 10 semanas me hace admirarte y amarte muchísimo más.",
       "Por el espacio tan enorme que ocupas en mi vida, sin importar lo que dicte el mapa o el GPS.",
-      "Porque de todas las personas en Lima, Trujillo, en Panamá y en el mundo, tú eres y siempre serás mi coincidencia favorita.",
+      "Because de todas las personas en Lima, Trujillo, en Panamá y en el mundo, tú eres y siempre serás mi coincidencia favorita.",
       "Porque cada vez que te veo regresar a Lima, confirmo que mi lugar favorito en el planeta es justo a tu lado.",
       "Por la intensidad tan bonita con la que nos amamos, que supera cualquier huso horario y frontera.",
-      "Porque me encanta quedarme congelado simplemente admirando tu carita por la cámara mientras me cuentas cómo estuvo tu día.",
+      "Because me encanta quedarme congelado simplemente admirando tu carita por la cámara mientras me cuentas cómo estuvo tu día.",
       "Porque tu carita hermosa es lo único que necesito ver para reiniciarme la vida y olvidar cualquier mal momento.",
-      "Porque este primer año es solo el cimiento fuerte de la vida entera que nos espera sin aeropuertos de por medio.",
+      "Because este primer año es solo el cimiento fuerte de la vida entera que nos espera sin aeropuertos de por medio.",
       "Porque me demostraste que el amor de verdad no sabe de distancias, sino de ganas, de compromiso y de equipo.",
-      "Porque te amo con una fuerza que simplemente no cabe en 100 razones, mi amor, mi compañera de maratones y mi todo. ❤️",
+      "Because te amo con una fuerza que simplemente no cabe en 100 razones, mi amor, mi compañera de maratones y mi todo. ❤️",
       "Porque amo ver tu carita de felicidad absoluta cada vez que abres una bolsa de Inka Chips.",
       "Because tú eres de pedir unas papas fritas bien crujientes y yo soy feliz viéndote comerlas con tanta emoción.",
       "Porque eres una piña colada en un día caluroso en Panamá: dulce, refrescante y completamente adictiva.",
-      "Porque me encanta que salgas con tus amigos y te diviertas, pero amo aún más cuando me mandas un mensaje en plena fiesta diciendo que me amas o me extrañas.",
+      "Because me encanta que salgas con tus amigos y te diviertas, pero amo aún más cuando me mandas un mensaje en plena fiesta diciendo que me amas o me extrañas.",
       "Porque tu amor por la salchipapa es tan gigante como el mío por el ceviche, y aun así somos el match más perfecto del mundo.",
       "Porque eres la sal de mis Inka Chips: le das el sabor exacto, divertido y perfecto a mi vida.",
       "Porque eres mi trago favorito en el universo, dulce, alegre y perfecta como una piña colada de fin de semana.",
-      "Porque eres tan vital e indispensable para mí como toda el agua que tomo todo el día.",
+      "Because eres tan vital e indispensable para mí como toda el agua que tomo todo el día.",
       "Porque me encanta cuando te pones tímida cuando estamos solos, pero amo mil veces más cuando te pones traviesa y me dejas con ganas de más.",
       "Porque la pantalla del celular ya se está quedando muy chica para toda la tensión y las ganas que nos tenemos a la distancia.",
       "Porque en unas semanas en Panamá la barra de energía no va a ser virtual, y la vamos a llenar a puros besos de verdad. 🔥",
@@ -440,12 +548,12 @@
       "Por los suspiros prohibidos que me sacas cuando me mandas fotitos donde te ves demasiado sexy.",
       "Por las ganas locas que tengo de morderte esos labios perfectos cada vez que nos vemos.",
       "Por todos los planes secretos que tenemos para cuando estemos completamente a solas en casita. 😉",
-      "Porque me fascina ser el único dueño de tus pensamientos más pícaros y de tus sonrisas más coquetas.",
+      "Because me fascina ser el único dueño de tus pensamientos más pícaros y de tus sonrisas más coquetas.",
       "Because te tengo unas ganas que simplemente ya no caben en este código, y faltan muy pocas semanas para demostrártelo en vivo y en directo. ❤️",
       "Porque me encanta cuando mi pantalla se ilumina con una foto tuya de la nada y de repente todo mi día se vuelve un 1000% mejor.",
       "Porque amo cuando me mandas fotos de tus outfits y con eso confirmo lo increíblemente hermosa y sexy que te ves con todo.",
       "Por cómo se me acelera el pulso cada vez que veo la notificación en WhatsApp de que me has enviado una foto 'solo para mí'. 😉",
-      "Porque si tus fotos ya me hacen perder el control a miles de kilómetros, tenerte al frente en vivo y en directo va a ser completamente criminal.",
+      "Because si tus fotos ya me hacen perder el control a miles de kilómetros, tenerte al frente en vivo y en directo va a ser completamente criminal.",
       "Porque detrás de cada foto que nos compartimos hay una promesa silenciosa de todo lo que vamos a desquitar cuando estemos a cero kilómetros. ❤️"
     ];
 
@@ -455,7 +563,6 @@
     const musica = document.getElementById('bgMusic');
     const musicBtn = document.getElementById('musicBtn');
 
-    // Activar audio al primer toque en cualquier parte de la pantalla
     document.addEventListener('click', () => {
       if (musica.paused) {
         musica.play().catch(err => console.log("Interacción requerida para audio"));
@@ -521,7 +628,7 @@
           "Ya va queriendo... pero el clima de Panamá exige más calor. 🔥",
           "Esos 'Te amo' están potentes, pero sigo queriendo más mimos.",
           "¡Eso! Así me gusta que me consientas, mi amor. 😉",
-          "Dale con ganas, que Luffy insistiría más para encontrar el One Piece. 🏴‍仇"
+          "Dale con ganas, que Luffy insistiría más para encontrar el One Piece. 🏴‍☠️"
         ];
         feedback.innerText = medias[Math.floor(Math.random() * medias.length)];
       } 
@@ -555,29 +662,46 @@
     }
 
     // ==========================================
-    // 6. LÓGICA DEL FRASCO DE LAS RAZONES
+    // 6. LÓGICA DEL FRASCO DE LAS RAZONES CON MODAL
     // ==========================================
     let ultimaRazon = -1;
+    let ultimaFoto = -1;
 
     function sacarRazon() {
       const heart = document.getElementById('heartJar');
-      const display = document.getElementById('reasonDisplay');
+      const modal = document.getElementById('reasonModal');
+      const modalImg = document.getElementById('modalImg');
+      const modalText = document.getElementById('modalText');
       
+      // Animación de latido del frasco
       heart.classList.remove('beat');
       void heart.offsetWidth;
       heart.classList.add('beat');
 
+      // 1. Elegir una razón al azar
       let indiceAleatorio;
       do {
         indiceAleatorio = Math.floor(Math.random() * razones.length);
       } while (indiceAleatorio === ultimaRazon && razones.length > 1);
-      
       ultimaRazon = indiceAleatorio;
 
-      display.style.animation = 'none';
-      void display.offsetWidth;
-      display.innerText = razones[indiceAleatorio];
-      display.style.animation = 'fadeIn 0.5s ease forwards';
+      // 2. Elegir una foto al azar de forma independiente
+      let fotoAleatoria;
+      do {
+        fotoAleatoria = Math.floor(Math.random() * fotosRecuerdos.length);
+      } while (fotoAleatoria === ultimaFoto && fotosRecuerdos.length > 1);
+      ultimaFoto = fotoAleatoria;
+
+      // 3. Inyectar contenido en la ventana flotante
+      modalText.innerText = razones[indiceAleatorio];
+      modalImg.src = fotosRecuerdos[fotoAleatoria];
+
+      // 4. Mostrar la ventana con su animación
+      modal.classList.add('show');
+    }
+
+    function cerrarModal() {
+      document.getElementById('reasonModal').classList.remove('show');
     }
 
     // ==========================================
